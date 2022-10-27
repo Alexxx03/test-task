@@ -1,0 +1,314 @@
+@startuml
+class org.job.interview.roombookingservice.exceptions.UserNotFoundException {
+- Long userId
+}
+class org.job.interview.roombookingservice.service.impl.UserServiceImpl {
+- UserRepository userRepository
+- RoleRepository roleRepository
+- BCryptPasswordEncoder passwordEncoder
+- ModelMapper modelMapper
++ UserDetails loadUserByUsername(String)
++ UserDTO findByUsername(String)
++ CreateUserResponse register(UserDTO,String)
+}
+class org.job.interview.roombookingservice.controller.AuthenticationController {
+- AuthenticationManager authenticationManager
+- JwtTokenProvider jwtTokenProvider
+- UserService userService
++ ResponseEntity<LoginResponseDTO> login(LoginRequestDTO)
++ ResponseEntity<CreateUserResponse> signup(UserDTO)
+}
+interface org.job.interview.roombookingservice.persistence.repository.RoomRepository {
+~ Optional<Room> findByNumber(Long)
+}
+class org.job.interview.roombookingservice.configuration.DataSourceConfiguration {
+- String jdbcHibernateAutoMode
+- String jdbcHibernateDialect
++ HikariDataSource dataSource(DataSourceProperties)
++ LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource)
++ JpaTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean)
+- Properties hibernateProperties()
+}
+class org.job.interview.roombookingservice.RoomBookingServiceApplication {
++ {static} void main(String[])
+}
+class org.job.interview.roombookingservice.controller.dto.UserDTO {
+- Long id
+- String username
+- String firstName
+- String lastName
+- String password
+- Set<RoleDTO> roles
++ List<String> getAuthorities()
+}
+class org.job.interview.roombookingservice.security.jwt.JwtAuthentication {
+- String credentials
+- String principal
++ Object getCredentials()
++ Object getPrincipal()
++ AuthenticatedUserDetails getAuthenticatedUserDetails()
+}
+class org.job.interview.roombookingservice.util.EnumToStringConverter {
++ String convert(MappingContext<T,String>)
+}
+interface org.job.interview.roombookingservice.persistence.repository.BookingRepository {
+~ Boolean isRoomAlreadyBooked(Long,Date,Integer,Integer)
+~ Page<Booking> getAllByUserThisWeek(Pageable,Long,Date)
+~ Optional<Booking> findByIdAndUserId(Long,Long)
+}
+class org.job.interview.roombookingservice.controller.dto.CreateUserResponse {
+- String username
+- String firstName
+- String lastName
+}
+class org.job.interview.roombookingservice.security.jwt.JwtTokenProvider {
+- String secret
+- long expirationPeriod
+~ SecretKey secretKey
+- JwtParser jwtParser
+- UserDetailsService userDetailsService
++ void init()
++ SecretKey decodeKeyFromString(String)
++ Authentication getAuthentication(String)
++ String createToken(String,Collection<? extends GrantedAuthority>)
++ boolean validateToken(String)
+- List<String> getRoleNames(Collection<? extends GrantedAuthority>)
+}
+class org.job.interview.roombookingservice.controller.dto.LoginRequestDTO {
+- String username
+- String password
+}
+class org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx {
+~ Date timestamp
+}
+class org.job.interview.roombookingservice.util.StringToEnumConverterFactory {
++ Converter<String,T> getConverter(Class<T>)
+}
+class org.job.interview.roombookingservice.util.StringToEnumConverterFactory.StringToEnumConverter {
+- Class<T> enumType
++ T convert(String)
+}
+class org.job.interview.roombookingservice.persistence.model.Booking {
+- Long id
+- Weekday weekday
+- Integer startTime
+- Integer endTime
+- Date date
+- Long userId
+- Room room
+}
+interface org.job.interview.roombookingservice.persistence.repository.RoleRepository {
+~ Optional<AccessRole> findByName(String)
+}
+class org.job.interview.roombookingservice.exceptions.InvalidRoleNameException {
+}
+enum org.job.interview.roombookingservice.persistence.model.Weekday {
++  MONDAY
++  TUESDAY
++  WEDNESDAY
++  THURSDAY
++  FRIDAY
++ String toString()
+}
+interface org.job.interview.roombookingservice.persistence.repository.UserRepository {
+~ Optional<User> getByUsername(String)
+}
+class org.job.interview.roombookingservice.exceptions.InvalidWeekdayException {
+}
+class org.job.interview.roombookingservice.util.StringToEnumConverter {
++ T convert(MappingContext<String,T>)
+}
+class org.job.interview.roombookingservice.exceptions.InvalidAuthenticationType {
+}
+class org.job.interview.roombookingservice.configuration.SecurityConfiguration {
++ BCryptPasswordEncoder encoder()
++ AuthenticationProvider dataSourceAuthenticationProvider(UserService,BCryptPasswordEncoder)
++ AuthenticationManager authenticationManagerBean(List<AuthenticationProvider>)
++ SecurityFilterChain filterChain(HttpSecurity,JwtTokenFilter)
+}
+interface org.job.interview.roombookingservice.service.BookingService {
+~ PageableResponse<BookingDTO> getUsersWeeklyBookings(Pageable,Long)
+~ BookingDTO getBookingById(Long,Long)
+~ BookingDTO createBooking(BookingDTO,Long)
+~ BookingDTO updateBooking(BookingDTO,Long,Long)
+~ void deleteBooking(Long,Long)
+}
+class org.job.interview.roombookingservice.exceptions.InvalidJwtException {
+- String invalidToken
+}
+class org.job.interview.roombookingservice.security.DataSourceAuthenticationProvider {
+- UserService userService
+- BCryptPasswordEncoder passwordEncoder
++ Authentication authenticate(Authentication)
++ boolean supports(Class<?>)
+}
+interface org.job.interview.roombookingservice.service.UserService {
+~ UserDTO findByUsername(String)
+~ CreateUserResponse register(UserDTO,String)
+}
+class org.job.interview.roombookingservice.exceptions.RoomAlreadyBookedException {
+}
+class org.job.interview.roombookingservice.security.jwt.JwtTokenFilter {
+- JwtTokenProvider jwtTokenProvider
++ void doFilter(ServletRequest,ServletResponse,FilterChain)
+}
+class org.job.interview.roombookingservice.controller.dto.LoginResponseDTO {
+- String username
+- String token
+}
+class org.job.interview.roombookingservice.exceptions.InvalidRoomNumberException {
+~ Long roomNumber
+}
+class org.job.interview.roombookingservice.controller.dto.PermissionDTO {
+- Long id
+- String permissionCode
+- String description
+}
+class org.job.interview.roombookingservice.service.impl.BookingServiceImpl {
+- BookingRepository bookingRepository
+- UserRepository userRepository
+- RoomRepository roomRepository
+- ModelMapper modelMapper
++ PageableResponse<BookingDTO> getUsersWeeklyBookings(Pageable,Long)
++ BookingDTO getBookingById(Long,Long)
++ BookingDTO createBooking(BookingDTO,Long)
++ BookingDTO updateBooking(BookingDTO,Long,Long)
++ void deleteBooking(Long,Long)
+- BookingDTO findByIdAndUserId(Long,Long)
+}
+class org.job.interview.roombookingservice.controller.dto.RoomDTO {
+- Long id
+- Long number
+}
+class org.job.interview.roombookingservice.configuration.WebMvcConfiguration {
++ ModelMapper modelMapper(StringToEnumConverter<Weekday>,EnumToStringConverter<Weekday>)
++ void addArgumentResolvers(List<HandlerMethodArgumentResolver>)
++ void addFormatters(FormatterRegistry)
+}
+class org.job.interview.roombookingservice.security.jwt.JwtSecurityConfigurer {
+- JwtTokenFilter jwtTokenFilter
++ void configure(HttpSecurity)
+}
+class org.job.interview.roombookingservice.persistence.model.AccessRole {
+- Long id
+- String name
+- Set<Permission> permissions
+}
+class org.job.interview.roombookingservice.util.DateUtils {
++ {static} boolean isWeekend(Date)
+}
+class org.job.interview.roombookingservice.persistence.model.User {
+- Long id
+- String firstName
+- String lastName
+- String username
+- String password
+- Set<AccessRole> roles
+}
+class org.job.interview.roombookingservice.persistence.model.Permission {
+- Long id
+- String code
+- String description
+}
+class org.job.interview.roombookingservice.persistence.model.Room {
+- Long id
+- Long number
+}
+class org.job.interview.roombookingservice.controller.dto.PageableResponse {
+~ List<T> content
+~ Integer number
+~ Integer size
+~ Long total
+~ Long totalElements
++ Integer getTotalPages()
+- Boolean hasNext()
++ Boolean isLast()
++ Boolean isFirst()
++ Boolean isEmpty()
+}
+class org.job.interview.roombookingservice.security.AuthenticatedUserDetailsArgumentResolver {
++ boolean supportsParameter(MethodParameter)
++ Object resolveArgument(MethodParameter,ModelAndViewContainer,NativeWebRequest,WebDataBinderFactory)
+}
+class org.job.interview.roombookingservice.controller.BookingController {
+- BookingService bookingService
++ PageableResponse<BookingDTO> getAllByThisWeek(Pageable)
++ BookingDTO getBookingById(Long)
++ BookingDTO createBooking(BookingDTO)
++ BookingDTO updateBooking(BookingDTO,Long)
++ void deleteBooking(Long)
+}
+class org.job.interview.roombookingservice.exceptions.UnauthenticatedRequest {
+}
+class org.job.interview.roombookingservice.exceptions.BookingNotFoundException {
+~ Long userId
+~ Long bookingId
+}
+class org.job.interview.roombookingservice.controller.dto.RoleDTO {
+- Long id
+- String name
+- List<PermissionDTO> permissions
+}
+class org.job.interview.roombookingservice.security.AuthenticatedUserDetails {
+- Long id
+- String firstName
+- String lastName
+- String username
+- boolean enabled
+- Collection<? extends GrantedAuthority> authorities
++ Long getId()
++ String getFirstName()
++ String getLastName()
++ Collection<? extends GrantedAuthority> getAuthorities()
++ String getPassword()
++ String getUsername()
++ boolean isAccountNonExpired()
++ boolean isAccountNonLocked()
++ boolean isCredentialsNonExpired()
++ boolean isEnabled()
+}
+class org.job.interview.roombookingservice.controller.dto.BookingDTO {
+- Long id
+- String weekday
+- Integer startTime
+- Integer endTime
+- Date date
+- Long userId
+- RoomDTO room
++ BookingDTO update(BookingDTO)
+}
+class org.job.interview.roombookingservice.util.UserUtil {
++ {static} AuthenticatedUserDetails getLoggedInUser()
+}
+
+
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.UserNotFoundException
+org.job.interview.roombookingservice.service.UserService <|.. org.job.interview.roombookingservice.service.impl.UserServiceImpl
+org.springframework.data.jpa.repository.JpaRepository <|-- org.job.interview.roombookingservice.persistence.repository.RoomRepository
+org.springframework.security.authentication.AbstractAuthenticationToken <|-- org.job.interview.roombookingservice.security.jwt.JwtAuthentication
+org.modelmapper.Converter <|.. org.job.interview.roombookingservice.util.EnumToStringConverter
+org.springframework.data.jpa.repository.JpaRepository <|-- org.job.interview.roombookingservice.persistence.repository.BookingRepository
+org.springframework.web.server.ResponseStatusException <|-- org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx
+org.springframework.core.convert.converter.ConverterFactory <|.. org.job.interview.roombookingservice.util.StringToEnumConverterFactory
+org.job.interview.roombookingservice.util.StringToEnumConverterFactory +.. org.job.interview.roombookingservice.util.StringToEnumConverterFactory.StringToEnumConverter
+org.job.interview.roombookingservice.util.Converter <|.. org.job.interview.roombookingservice.util.StringToEnumConverterFactory.StringToEnumConverter
+org.springframework.data.jpa.repository.JpaRepository <|-- org.job.interview.roombookingservice.persistence.repository.RoleRepository
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.InvalidRoleNameException
+org.springframework.data.jpa.repository.JpaRepository <|-- org.job.interview.roombookingservice.persistence.repository.UserRepository
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.InvalidWeekdayException
+org.modelmapper.Converter <|.. org.job.interview.roombookingservice.util.StringToEnumConverter
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.InvalidAuthenticationType
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.InvalidJwtException
+org.springframework.security.authentication.AuthenticationProvider <|.. org.job.interview.roombookingservice.security.DataSourceAuthenticationProvider
+org.springframework.security.core.userdetails.UserDetailsService <|-- org.job.interview.roombookingservice.service.UserService
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.RoomAlreadyBookedException
+org.springframework.web.filter.GenericFilterBean <|-- org.job.interview.roombookingservice.security.jwt.JwtTokenFilter
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.InvalidRoomNumberException
+org.job.interview.roombookingservice.service.BookingService <|.. org.job.interview.roombookingservice.service.impl.BookingServiceImpl
+org.springframework.web.servlet.config.annotation.WebMvcConfigurer <|.. org.job.interview.roombookingservice.configuration.WebMvcConfiguration
+org.springframework.security.config.annotation.SecurityConfigurerAdapter <|-- org.job.interview.roombookingservice.security.jwt.JwtSecurityConfigurer
+org.springframework.web.method.support.HandlerMethodArgumentResolver <|.. org.job.interview.roombookingservice.security.AuthenticatedUserDetailsArgumentResolver
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.UnauthenticatedRequest
+org.job.interview.roombookingservice.exceptions.ResponseStatusWithTimestampEx <|-- org.job.interview.roombookingservice.exceptions.BookingNotFoundException
+org.springframework.security.core.userdetails.UserDetails <|.. org.job.interview.roombookingservice.security.AuthenticatedUserDetails
+@enduml
