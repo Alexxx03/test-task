@@ -1,0 +1,34 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URI}
+    driverClassName: com.mysql.cj.jdbc.Driver
+    testOnBorrow: true
+    validationQuery: SELECT 1
+    hikari:
+      maximum-pool-size: 5
+      max-lifetime: 1800000 #30 minutes
+  jpa:
+    hibernate:
+      hbm2ddl:
+        auto: validate
+      dialect: org.hibernate.dialect.MySQL5Dialect
+    open-in-view: false
+  profiles:
+    active: dev
+  liquibase:
+    change-log: classpath:liquibase/changelog.xml
+    url: jdbc:mysql://localhost:3306/room_booking?serverTimeZone=UTC
+    user: root
+    password: root
+jwt:
+  token:
+    secret: kolobokkokodfn7874jknvhkfjm09snknhnkfh884834598450569095376736585ikmfvlknv
+    expired: 36000000
+
